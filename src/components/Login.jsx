@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { Redirect } from "react-router";
 import { login } from "../actions/auth";
 
 class Login extends Component {
@@ -32,12 +33,30 @@ class Login extends Component {
   };
 
   render() {
-    const { inProgress } = this.props.auth;
-    console.log(inProgress);
+    const { inProgress, error, isLoggedIn } = this.props.auth;
+    //console.log(inProgress);
+    const { from } = this.props.location.state || { from: { pathname: "/" } };
+
+    if (isLoggedIn) {
+      return <Redirect to={from} />;
+    }
+
     return (
       <form className="login-form">
         <span className="login-signup-header">Log In</span>
         <div className="field">
+          {error && (
+            <p
+              style={{
+                textAlign: "center",
+                border: "1px solid red",
+                borderRadius: 4,
+                padding: 4,
+              }}
+            >
+              {error}
+            </p>
+          )}
           <input
             type="email"
             placeholder="Email"
