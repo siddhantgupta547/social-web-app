@@ -15,6 +15,7 @@ import Profile from "./Profile";
 import PrivateRoutes from "./PrivateRoutes";
 import { authenticateUser } from "../actions/auth";
 import { getAuthTokenFromLocalStorage } from "../helpers/utils";
+import { fetchFriends } from "../actions/friends";
 
 class App extends React.Component {
   componentDidMount() {
@@ -23,7 +24,7 @@ class App extends React.Component {
     const token = getAuthTokenFromLocalStorage();
     if (token) {
       const { _id: id, email, name } = jwtDecode(token);
-      console.log(`id ${id}, email ${email}, name ${name}`);
+      //console.log(`id ${id}, email ${email}, name ${name}`);
       this.props.dispatch(
         authenticateUser({
           id,
@@ -31,11 +32,12 @@ class App extends React.Component {
           name,
         })
       );
+      this.props.dispatch(fetchFriends());
     }
   }
 
   render() {
-    const { posts } = this.props;
+    const { posts, friends } = this.props;
     const isLoggedIn = this.props.auth.isLoggedIn;
     return (
       <Router>
@@ -46,7 +48,9 @@ class App extends React.Component {
               exact
               path="/"
               render={(props) => {
-                return <Home {...props} posts={posts} />;
+                return (
+                  <Home {...props} posts={posts} friends={friends} isLoggedIn />
+                );
               }}
             />
             <Route
@@ -79,6 +83,7 @@ function mapStateToProps(state) {
   return {
     posts: state.posts,
     auth: state.auth,
+    friends: state.friends,
   };
 }
 
